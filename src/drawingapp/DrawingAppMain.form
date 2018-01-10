@@ -38,6 +38,11 @@
                   <Component id="Select" max="32767" attributes="0"/>
                   <Component id="Move" max="32767" attributes="0"/>
                   <Component id="Resize" max="32767" attributes="0"/>
+                  <Component id="UndoButton" alignment="0" max="32767" attributes="0"/>
+                  <Component id="RedoButton" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jLabel3" max="32767" attributes="0"/>
+                  <Component id="ImportButton" max="32767" attributes="0"/>
+                  <Component id="ExportButton" max="32767" attributes="0"/>
               </Group>
               <EmptySpace pref="41" max="32767" attributes="0"/>
               <Component id="DrawingField" min="-2" max="-2" attributes="0"/>
@@ -64,7 +69,17 @@
                       <Component id="Move" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="Resize" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="320" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="UndoButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="RedoButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="ImportButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="ExportButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="184" max="32767" attributes="0"/>
                   </Group>
                   <Component id="DrawingField" pref="499" max="32767" attributes="0"/>
               </Group>
@@ -169,6 +184,35 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ResizeActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="UndoButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Undo"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="RedoButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Redo"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="File IO Tools"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="ImportButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Import"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ImportButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="ExportButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Export"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

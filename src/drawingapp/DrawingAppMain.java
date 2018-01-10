@@ -7,9 +7,12 @@ package drawingapp;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -24,6 +27,7 @@ public class DrawingAppMain extends javax.swing.JFrame {
     Rectangle rectangle;
     Ellips ellips;
     Select select = new Select();
+    IOController io = new IOController();
 
     public DrawingAppMain() {
         initComponents();
@@ -47,6 +51,11 @@ public class DrawingAppMain extends javax.swing.JFrame {
         Select = new javax.swing.JButton();
         Move = new javax.swing.JButton();
         Resize = new javax.swing.JButton();
+        UndoButton = new javax.swing.JButton();
+        RedoButton = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        ImportButton = new javax.swing.JButton();
+        ExportButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DrawingApp");
@@ -126,6 +135,22 @@ public class DrawingAppMain extends javax.swing.JFrame {
             }
         });
 
+        UndoButton.setText("Undo");
+
+        RedoButton.setText("Redo");
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("File IO Tools");
+
+        ImportButton.setText("Import");
+        ImportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ImportButtonActionPerformed(evt);
+            }
+        });
+
+        ExportButton.setText("Export");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -140,7 +165,12 @@ public class DrawingAppMain extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Select, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Move, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Resize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(Resize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(UndoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(RedoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ImportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ExportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                 .addComponent(DrawingField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -164,7 +194,17 @@ public class DrawingAppMain extends javax.swing.JFrame {
                         .addComponent(Move)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Resize)
-                        .addGap(0, 320, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(UndoButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(RedoButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ImportButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ExportButton)
+                        .addGap(0, 184, Short.MAX_VALUE))
                     .addComponent(DrawingField, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(MouseCoords)
@@ -293,6 +333,25 @@ public class DrawingAppMain extends javax.swing.JFrame {
         state.SetState(5);
     }//GEN-LAST:event_ResizeActionPerformed
 
+    private void ImportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImportButtonActionPerformed
+        JFileChooser chooser= new JFileChooser();
+
+        int choice = chooser.showOpenDialog(DrawingField);
+
+        if (choice != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        
+        File chosenFile = chooser.getSelectedFile();
+        try {
+            Graphics g = DrawingField.getGraphics();
+            io.setGraphics(g);
+            io.LoadFile(chosenFile);
+        } catch (IOException ex) {
+            Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ImportButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -331,12 +390,17 @@ public class DrawingAppMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel DrawingField;
     private javax.swing.JButton EllipsButton;
+    private javax.swing.JButton ExportButton;
+    private javax.swing.JButton ImportButton;
     private javax.swing.JLabel MouseCoords;
     private javax.swing.JButton Move;
     private javax.swing.JButton RectangleButton;
+    private javax.swing.JButton RedoButton;
     private javax.swing.JButton Resize;
     private javax.swing.JButton Select;
+    private javax.swing.JButton UndoButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     // End of variables declaration//GEN-END:variables
 }

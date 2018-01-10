@@ -21,6 +21,10 @@ public class Ellips extends JPanel {
     int[][] corners;
     Color c;
 
+    public Ellips() {
+        corners = new int[][]{{0, 0}, {0, 0}};
+    }
+
     //Get the width of the Ellips
     public int getWidth() {
         return width;
@@ -40,13 +44,13 @@ public class Ellips extends JPanel {
     public void setHeight(int height) {
         this.height = height;
     }
-    
+
     //Sets start X and Y coordinates of the newly created Ellips 
     public void initEllips(int left, int top) {
         this.leftStart = left;
         this.topStart = top;
     }
-    
+
     //Sets end X and Y coordinates of the newly created Ellips 
     public void endEllips(int left, int top) {
         this.leftEnd = left;
@@ -57,12 +61,12 @@ public class Ellips extends JPanel {
     public int[][] getCorners() {
         return corners;
     }
-    
+
     //Sets the index of the 2d array with a corner coordinate of the Ellips
     public void setCorners(int i, int y, int value) {
         corners[i][y] = value;
     }
-    
+
     //Sets the colour of the Ellips
     public void setColor(Color c) {
         this.c = c;
@@ -74,7 +78,7 @@ public class Ellips extends JPanel {
         The outcome is store in the 2d array. The width and height are also calculated.
         Before the Ellips is drawn, the colour is set.
         Finally the Ellips is Drawn.
-    */
+     */
     public void paint(Graphics g) {
         g.setColor(c);
         if (leftEnd - leftStart < 0 && topEnd - topStart < 0) {
@@ -115,10 +119,10 @@ public class Ellips extends JPanel {
             System.out.println("bottom left");
         }
     }
-    
+
     /*
         This method is the second paint method, when all the calculation are done in the first.
-    */
+     */
     public void Ppaint(Graphics g) {
         g.setColor(c);
         g.drawOval(corners[0][0], corners[0][1], width, height);

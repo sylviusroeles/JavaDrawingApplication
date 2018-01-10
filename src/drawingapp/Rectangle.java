@@ -20,6 +20,10 @@ public class Rectangle extends JPanel {
     int width, height;
     int[][] corners;
     Color c;
+    
+    public Rectangle(){
+        corners = new int[][]{{0,0},{0,0}};
+    }
 
     //Get the width of the Rectangle
     public int getWidth() {
@@ -122,6 +126,6 @@ public class Rectangle extends JPanel {
     public void Ppaint(Graphics g) {
         g.setColor(c);
         g.drawRect(corners[0][0], corners[0][1], width, height);
-        System.out.println("width: " + width + " height: " + height);
+        //System.out.println("cornerx: " + corners[0][0] + " cornery: " + corners[0][1] + " width: " + width + " height: " + height);
     }
 }

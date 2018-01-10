@@ -89,13 +89,14 @@ public class Select {
 
     //clears all painted shapes from the application
     public void clearAll() {
-        g.clearRect(0, 0, 796, 505);
+        g.clearRect(0, 0, 796, 515);
     }
+
     /* 
         This method repaints all existing shapes in the arraylist.
         Each shapes paint method is being invoked to draw the shape.
         If the current shape index is the selected one, give it a red colour and invoke the setColor method.
-    */
+     */
     public void repaintAll() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         clearAll();
         for (Object shape : shapeslist) {
@@ -113,14 +114,14 @@ public class Select {
             test.invoke(shape, g);
         }
     }
-    
+
     /* 
         This method finds the shape closest to the mousepointer.
         It then sets the selectedMethod global, for future reference.
         The distance between mousepointer and shape is calculated using line intersection.
         If the mouse is closer then 5 pixels to a shapes line, it will select that shape.
         The shape is returned to stop the execution of the loop.
-    */
+     */
     public Object FindClosestShape(MouseEvent evt) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         selectedIsValid(false);
         for (Object shape : shapeslist) {
@@ -168,13 +169,13 @@ public class Select {
         }
         return null;
     }
-    
+
     /* 
         This method Moves a shape around.
         The shape is selected from the selectedShape global.
         The shape's corners are being set to the new values by invoking the method.
         Finally the repaintAll() method is being called to repaint all shapes with their new coordinates.
-    */
+     */
     public void Move(MouseEvent evt) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (isMoving) {
             int mousex = evt.getX();
@@ -192,13 +193,13 @@ public class Select {
             }
         }
     }
-    
+
     /*
         This method is for Resizing the shapes.
         The shape is selected from the selectedShape global.
         The shapes setWidth and setHeight methods are invoked to set the new width and height
         Finally the repaintAll() method is being called to repaint all shapes with their new size.
-    */
+     */
     public void Resize(MouseEvent evt) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (isResizing) {
             int mousex = evt.getX();
@@ -212,6 +213,13 @@ public class Select {
             Method setheight = closestObject.getClass().getMethod("setHeight", param);
             setwidth.invoke(closestObject, mousex - corners[0][0]);
             setheight.invoke(closestObject, mousey - corners[0][1]);
+            Class cornerparam[] = new Class[3];
+            cornerparam[0] = int.class;
+            cornerparam[1] = int.class;
+            cornerparam[2] = int.class;
+            Method setcorners = closestObject.getClass().getMethod("setCorners", cornerparam);
+            setcorners.invoke(closestObject, 1, 0, mousex);
+            setcorners.invoke(closestObject, 1, 1, mousey);
             repaintAll();
         }
     }
