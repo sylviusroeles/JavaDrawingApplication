@@ -5,48 +5,151 @@
  */
 package drawingapp;
 
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Sylvius
  */
 public class Command {
-    
-    public Command(){
+
+    Ellipse ellipse;
+    Rectangle rectangle;
+    Select select = new Select();
+    Move move = new Move();
+    Resize resize = new Resize();
+    Graphics g;
+    ArrayList<Object> currShapes = new ArrayList<>();
+
+    public Command() {
+
     }
-    
-    public void Select(){
-        
+
+    public Command(Graphics g) {
+        this.g = g;
     }
-    
-    public void Resize(){
-        
+
+    public void setGraphics(Graphics g) {
+        this.g = g;
     }
-    
-    public void Move(){
-        
+
+    public Object Select(ArrayList<Object> list, MouseEvent evt) {
+        try {
+            return select.FindClosestShape(list, evt);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
-    
-    public void Group(int size){
+
+    boolean isMoving = false;
+
+    public void setisMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
+
+    public boolean getisMoving() {
+        return isMoving;
+    }
+
+    public void Resize(Object o, MouseEvent evt) {
+        try {
+            resize.Resize(o, evt);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    boolean isResizing = false;
+
+    public void setIsResizing(boolean isResizing) {
+        this.isResizing = isResizing;
+    }
+
+    public boolean getIsResizing() {
+        return isResizing;
+    }
+
+    public void Move(Object o, MouseEvent evt) {
+        try {
+            if(isMoving){
+                move.Move(o, evt);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void Group(int size) {
         System.out.println("Group");
     }
-    
-    public void Ellipse(int sx, int sy, int width, int height){
+
+    public Object Ellipse(int sx, int sy, int width, int height) {
+        ellipse = new Ellipse();
+        ellipse.setCorners(new int[][]{{sx, sy}, {sx + width, sy + height}});
+        ellipse.Ppaint(g);
         System.out.println("Ellipse");
+        return ellipse;
     }
-    
-    public void Rectangle(int sx, int sy, int width, int height){
+
+    public Object Rectangle(int sx, int sy, int width, int height) {
+        rectangle = new Rectangle();
+        rectangle.setCorners(new int[][]{{sx, sy}, {sx + width, sy + height}});
+        rectangle.Ppaint(g);
         System.out.println("Rectangle");
+        return rectangle;
     }
-    
-    public void Ornament(String alignment, String s){
+
+    public void Ornament(String alignment, String s) {
         System.out.println("Ornament");
     }
-    
-    public void Undo(){
-        
+
+    public void Undo(ArrayList<Object> list) {
+        try {
+            repaintAll(list);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    public void Redo(){
-        
+
+    public void Redo(ArrayList<Object> list) {
+        try {
+            repaintAll(list);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    //clears all painted shapes from the application
+    public void clearAll() {
+        g.clearRect(0, 0, 796, 515);
+    }
+
+    /* 
+        This method repaints all existing shapes in the arraylist.
+        Each shapes paint method is being invoked to draw the shape.
+        If the current shape index is the selected one, give it a red colour and invoke the setColor method.
+     */
+    public void repaintAll(ArrayList<Object> shapes) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        clearAll();
+        int index = 0;
+        for (Object shape : shapes) {
+            index++;
+            System.out.println(index);
+            Class param[] = new Class[1];
+            param[0] = Graphics.class;
+            try {
+                Method test = shape.getClass().getMethod("Ppaint", param);
+                test.invoke(shape, g);
+            } catch (NullPointerException ex) {
+                System.out.println(ex);
+            }
+        }
     }
 }

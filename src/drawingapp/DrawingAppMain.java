@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -25,9 +26,16 @@ public class DrawingAppMain extends javax.swing.JFrame {
      */
     State state = new State();
     Rectangle rectangle;
-    Ellips ellips;
-    Select select = new Select();
+    Ellipse ellipse;
     IOController io = new IOController();
+    Command command;
+    History history = new History();
+    int mousex, mousey;
+    Math math = new Math();
+    Command resize = new Command();
+    Command move = new Command();
+    Command select = new Command();
+    Object selectedShape;
 
     public DrawingAppMain() {
         initComponents();
@@ -136,8 +144,18 @@ public class DrawingAppMain extends javax.swing.JFrame {
         });
 
         UndoButton.setText("Undo");
+        UndoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UndoButtonActionPerformed(evt);
+            }
+        });
 
         RedoButton.setText("Redo");
+        RedoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RedoButtonActionPerformed(evt);
+            }
+        });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("File IO Tools");
@@ -223,51 +241,35 @@ public class DrawingAppMain extends javax.swing.JFrame {
     }//GEN-LAST:event_RectangleButtonActionPerformed
 
     private void DrawingFieldMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DrawingFieldMousePressed
-        Graphics g = DrawingField.getGraphics();
         switch (state.GetState()) {
             case 1:
-                ellips = new Ellips();
-                ellips.initEllips(evt.getX(), evt.getY());
+                mousex = evt.getX();
+                mousey = evt.getY();
                 break;
             case 2:
-                rectangle = new Rectangle();
-                rectangle.initRectangle(evt.getX(), evt.getY());
+                mousex = evt.getX();
+                mousey = evt.getY();
                 break;
             case 3: {
-                try {
-                    select.setGraphics(g);
-                    select.FindClosestShape(evt);
-                } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                selectedShape = select.Select(history.getVisibleHistory(), evt);
                 break;
             }
             case 4: {
-                select.setGraphics(g);
-                try {
-                    if(!select.getIsMoving()){
-                        select.Move(evt);
-                        select.setIsMoving(true);
-                    } else {
-                        select.setIsMoving(false);
-                    }
-                } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+                if (!move.getisMoving()) {
+                    move.setisMoving(true);
+                } else {
+                    move.setisMoving(false);
                 }
                 break;
             }
             case 5: {
-                select.setGraphics(g);
-                    if(!select.getIsResizing()){
-                    try {
-                        select.Resize(evt);
-                    } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                        select.setIsResizing(true);
-                    } else {
-                        select.setIsResizing(false);
-                    }
+                if (!resize.getIsResizing()) {
+                    resize.Resize(selectedShape, evt);
+                    resize.setIsResizing(true);
+                } else {
+                    resize.setIsResizing(false);
+                    history.addToHistory(selectedShape);
+                }
                 break;
             }
             default:
@@ -279,16 +281,15 @@ public class DrawingAppMain extends javax.swing.JFrame {
         Graphics g = DrawingField.getGraphics();
         switch (state.GetState()) {
             case 1:
-                ellips.endEllips(evt.getX(), evt.getY());
-                ellips.setColor(Color.black);
-                ellips.paint(g);
-                select.addShape(ellips);
+                command = new Command(g);
+                int[][] ellipseShape = math.get2dCoordinates(mousex, evt.getX(), mousey, evt.getY());
+                System.out.println(ellipseShape[0][0] + " " + ellipseShape[0][1] + " " + ellipseShape[1][0] + " " + ellipseShape[1][1]);
+                history.addToHistory(command.Ellipse(ellipseShape[0][0], ellipseShape[0][1], ellipseShape[1][0], ellipseShape[1][1]));
                 break;
             case 2:
-                rectangle.endRectangle(evt.getX(), evt.getY());
-                rectangle.setColor(Color.black);
-                rectangle.paint(g);
-                select.addShape(rectangle);
+                command = new Command(g);
+                int[][] rectangleShape = math.get2dCoordinates(mousex, evt.getX(), mousey, evt.getY());
+                history.addToHistory(command.Rectangle(rectangleShape[0][0], rectangleShape[0][1], rectangleShape[1][0], rectangleShape[1][1]));
                 break;
             default:
                 break;
@@ -297,22 +298,23 @@ public class DrawingAppMain extends javax.swing.JFrame {
 
     private void DrawingFieldMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DrawingFieldMouseMoved
         MouseCoords.setText("(x:" + evt.getX() + ",y:" + evt.getY() + ")");
-        if (state.GetState() == 4 && select.getSelectedShape() != null && select.getselectedIsValid()) {
+        Graphics g = DrawingField.getGraphics();
+        if (state.GetState() == 4 && selectedShape != null && move.getisMoving()) {
             try {
-                select.Move(evt);
-            } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                move.setGraphics(g);
+                move.Move(selectedShape, evt);
+                move.repaintAll(history.getVisibleHistory());
+            } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NullPointerException ex) {
-
             }
         }
-        if (state.GetState() == 5 && select.getSelectedShape() != null && select.getselectedIsValid()) {
+        if (state.GetState() == 5 && selectedShape != null && resize.getIsResizing()) {
             try {
-                select.Resize(evt);
-            } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                resize.setGraphics(g);
+                resize.Resize(selectedShape, evt);
+                resize.repaintAll(history.getVisibleHistory());
+            } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NullPointerException ex) {
-
             }
         }
     }//GEN-LAST:event_DrawingFieldMouseMoved
@@ -327,30 +329,84 @@ public class DrawingAppMain extends javax.swing.JFrame {
 
     private void MoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MoveActionPerformed
         state.SetState(4);
+        try {
+            Class c = selectedShape.getClass();
+            Method getcorners = selectedShape.getClass().getMethod("getCorners");
+            Method getwidth = selectedShape.getClass().getMethod("getWidth");
+            Method getheight = selectedShape.getClass().getMethod("getHeight");
+            int[][] corners = (int[][]) getcorners.invoke(selectedShape);
+            int width = (int) getwidth.invoke(selectedShape);
+            int height = (int) getheight.invoke(selectedShape);
+            Object[] param = new Object[4];
+            param[0] = width;
+            param[1] = height;
+            param[2] = corners;
+            param[3] = Color.red;
+            Object copy = c.getConstructors()[1].newInstance(param);
+            history.addToHistoryWithIndex(copy, 1);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        history.HistoryDedug();
     }//GEN-LAST:event_MoveActionPerformed
 
     private void ResizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResizeActionPerformed
         state.SetState(5);
+        try {
+            Class c = selectedShape.getClass();
+            Method getcorners = selectedShape.getClass().getMethod("getCorners");
+            Method getwidth = selectedShape.getClass().getMethod("getWidth");
+            Method getheight = selectedShape.getClass().getMethod("getHeight");
+            int[][] corners = (int[][]) getcorners.invoke(selectedShape);
+            int width = (int) getwidth.invoke(selectedShape);
+            int height = (int) getheight.invoke(selectedShape);
+            Object[] param = new Object[4];
+            param[0] = width;
+            param[1] = height;
+            param[2] = corners;
+            param[3] = Color.red;
+            Object copy = c.getConstructors()[1].newInstance(param);
+            history.addToHistoryWithIndex(copy, 1);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        history.HistoryDedug();
     }//GEN-LAST:event_ResizeActionPerformed
 
     private void ImportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImportButtonActionPerformed
-        JFileChooser chooser= new JFileChooser();
+        JFileChooser chooser = new JFileChooser();
 
         int choice = chooser.showOpenDialog(DrawingField);
 
         if (choice != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        
+
         File chosenFile = chooser.getSelectedFile();
         try {
             Graphics g = DrawingField.getGraphics();
             io.setGraphics(g);
-            io.LoadFile(chosenFile);
-        } catch (IOException ex) {
+            history.addListToHistory(io.LoadFile(chosenFile));
+            command = new Command(g);
+            command.repaintAll(history.getVisibleHistory());
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ImportButtonActionPerformed
+
+    private void UndoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UndoButtonActionPerformed
+        Graphics g = DrawingField.getGraphics();
+        command = new Command(g);
+        history.setHistoryIndex(history.getHistoryIndex() - 1);
+        command.Undo(history.getVisibleHistory());
+    }//GEN-LAST:event_UndoButtonActionPerformed
+
+    private void RedoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RedoButtonActionPerformed
+        Graphics g = DrawingField.getGraphics();
+        command = new Command(g);
+        history.setHistoryIndex(history.getHistoryIndex() + 1);
+        command.Redo(history.getVisibleHistory());
+    }//GEN-LAST:event_RedoButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -385,6 +441,10 @@ public class DrawingAppMain extends javax.swing.JFrame {
                 new DrawingAppMain().setVisible(true);
             }
         });
+    }
+
+    public Graphics getAppGraphics() {
+        return DrawingField.getGraphics();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

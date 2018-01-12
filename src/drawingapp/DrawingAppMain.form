@@ -189,11 +189,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Undo"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UndoButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="RedoButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Redo"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RedoButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>

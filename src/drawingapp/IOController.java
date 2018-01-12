@@ -25,26 +25,28 @@ public class IOController {
     Group group;
     int includetogroup;
     Rectangle rectangle;
-    Ellips ellips;
+    Ellipse ellips;
     Ornament ornament;
     Graphics g;
     boolean nextObjecthasOrnament = false;
     String ornamentText = "";
     Select select = new Select();
     Command command;
+    ArrayList<Object> shapes = new ArrayList<>();
 
     //main method to load a file
-    public void LoadFile(File file) throws IOException {
+    public ArrayList<Object> LoadFile(File file) throws IOException {
         if (isTextFile(file.getName())) {
-            ProcessFile(file);
+            return ProcessFile(file);
         }
+        return null;
     }
 
     public void setGraphics(Graphics g) {
         this.g = g;
     }
 
-    public void ProcessFile(File file) throws IOException {
+    public ArrayList<Object> ProcessFile(File file) throws IOException {
         br = new BufferedReader(new FileReader(file));
         try {
             String line = br.readLine();
@@ -58,7 +60,7 @@ public class IOController {
                 }
                 String noTabs = tabbedString.replaceAll("\\t", "");
                 String[] SplitLine = noTabs.split(" ");
-                command = new Command();
+                command = new Command(g);
                 Class param[] = new Class[SplitLine.length - 1];
                 Object[] objects = new Object[SplitLine.length - 1];
                 for (int i = 1; i < SplitLine.length; i++) {
@@ -72,7 +74,7 @@ public class IOController {
                 }
                 try {
                     Method test = command.getClass().getMethod(SplitLine[0].substring(0, 1).toUpperCase() + SplitLine[0].substring(1), param);
-                    test.invoke(command, objects);
+                    shapes.add(test.invoke(command, objects));
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     Logger.getLogger(IOController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -81,12 +83,7 @@ public class IOController {
         } finally {
             br.close();
         }
-        select.setGraphics(g);
-        try {
-            select.repaintAll();
-        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(IOController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        return shapes;
     }
 
 //checks if the file is a text file
