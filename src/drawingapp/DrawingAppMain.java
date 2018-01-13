@@ -170,6 +170,11 @@ public class DrawingAppMain extends javax.swing.JFrame {
         });
 
         ExportButton.setText("Export");
+        ExportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExportButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -417,6 +422,17 @@ public class DrawingAppMain extends javax.swing.JFrame {
         history.setHistoryIndex(history.getHistoryIndex() + 1);
         command.Redo(history.getHistoryList());
     }//GEN-LAST:event_RedoButtonActionPerformed
+
+    private void ExportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExportButtonActionPerformed
+        JFileChooser chooser = new JFileChooser();
+
+        int choice = chooser.showOpenDialog(DrawingField);
+
+        if (choice != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        io.SaveFile(history.getHistoryList(), chooser.getSelectedFile().getName(), chooser.getCurrentDirectory().toString());        
+    }//GEN-LAST:event_ExportButtonActionPerformed
 
     /**
      * @param args the command line arguments

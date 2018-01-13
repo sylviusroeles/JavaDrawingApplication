@@ -20,16 +20,8 @@ import java.util.logging.Logger;
 public class IOController {
 
     FileInputStream input = null;
-    FileOutputStream output = null;
     BufferedReader br;
-    Group group;
-    int includetogroup;
-    Rectangle rectangle;
-    Ellipse ellips;
-    Ornament ornament;
     Graphics g;
-    boolean nextObjecthasOrnament = false;
-    String ornamentText = "";
     Select select = new Select();
     Command command;
     ArrayList<Object> shapes = new ArrayList<>();
@@ -85,6 +77,29 @@ public class IOController {
         }
         return shapes;
     }
+    
+    public void SaveFile(ArrayList<Object> shapes, String filename, String dir){
+        try {
+            PrintWriter writer = new PrintWriter(dir+ "\\" +filename, "UTF-8");
+            for(Object selectedShape: shapes){
+                try {
+                    Class c = selectedShape.getClass();
+                    Method getcorners = c.getMethod("getCorners");
+                    Method getwidth = c.getMethod("getWidth");
+                    Method getheight = c.getMethod("getHeight");
+                    int[][] corners = (int[][]) getcorners.invoke(selectedShape);
+                    int width = (int) getwidth.invoke(selectedShape);
+                    int height = (int) getheight.invoke(selectedShape);
+                    writer.println(c.getSimpleName().toLowerCase() + " " + corners[0][0] + " " + corners[0][1] + " " + width + " " + height);
+                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(IOController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            writer.close();
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(IOController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
 //checks if the file is a text file
     public boolean isTextFile(String s) {
@@ -107,50 +122,4 @@ public class IOController {
         }
         return true;
     }
-
-    /*
-                 if (line.startsWith("group")) {
-                    group = new Group();
-                    includetogroup = Integer.parseInt(SplitLine[1]);
-                } else if (line.startsWith("rectangle")) {
-                    rectangle = new Rectangle();
-                    rectangle.setColor(Color.black);
-                    rectangle.setCorners(0, 0, Integer.parseInt(SplitLine[1]));
-                    rectangle.setCorners(0, 1, Integer.parseInt(SplitLine[2]));
-                    rectangle.setWidth(Integer.parseInt(SplitLine[3]));
-                    rectangle.setHeight(Integer.parseInt(SplitLine[4]));
-                    rectangle.setCorners(1, 0, Integer.parseInt(SplitLine[1]) + Integer.parseInt(SplitLine[3]));
-                    rectangle.setCorners(1, 1, Integer.parseInt(SplitLine[2]) + Integer.parseInt(SplitLine[4]));
-                    select.addShape(rectangle);
-                    if (includetogroup > 0) {
-                        if(nextObjecthasOrnament){
-                            
-                            group.AddToGroup(rectangle);
-                        }
-                        includetogroup--;
-                    }
-                } else if (line.startsWith("ellipse")) {
-                    ellips = new Ellips();
-                    ellips.setColor(Color.black);
-                    ellips.setCorners(0, 0, Integer.parseInt(SplitLine[1]));
-                    ellips.setCorners(0, 1, Integer.parseInt(SplitLine[2]));
-                    ellips.setWidth(Integer.parseInt(SplitLine[3]));
-                    ellips.setHeight(Integer.parseInt(SplitLine[4]));
-                    ellips.setCorners(1, 0, Integer.parseInt(SplitLine[1]) + Integer.parseInt(SplitLine[3]));
-                    ellips.setCorners(1, 1, Integer.parseInt(SplitLine[2]) + Integer.parseInt(SplitLine[4]));
-                    select.addShape(ellips);
-                    if (includetogroup > 0) {
-                        group.AddToGroup(ellips);
-                        includetogroup--;
-                    }
-                } else if (line.startsWith("ornament")) {
-                    ornamentText = SplitLine[1];
-                    nextObjecthasOrnament = true;
-                    if (includetogroup > 0) {
-                        group.AddToGroup(ellips);
-                        includetogroup--;
-                    }
-                }   
-    
-     */
 }
