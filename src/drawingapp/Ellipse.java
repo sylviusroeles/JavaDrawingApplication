@@ -7,6 +7,7 @@ package drawingapp;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 
 /**
@@ -21,6 +22,13 @@ public class Ellipse extends JPanel {
 
     public Ellipse() {
         corners = new int[][]{{0, 0}, {0, 0}};
+    }
+
+    public Ellipse(int width, int height, int[][] corners, Color c) {
+        this.width = width;
+        this.height = height;
+        this.corners = new int[][]{{corners[0][0],corners[0][1]},{corners[1][0], corners[1][1]}};
+        this.c = c;
     }
 
     //Get the width of the Ellips
@@ -52,8 +60,8 @@ public class Ellipse extends JPanel {
     public void setCorner(int i, int y, int value) {
         corners[i][y] = value;
     }
-    
-    public void setCorners(int[][] corners){
+
+    public void setCorners(int[][] corners) {
         this.corners = corners;
         this.setWidth(corners[1][0] - corners[0][0]);
         this.setHeight(corners[1][1] - corners[0][1]);
@@ -71,5 +79,4 @@ public class Ellipse extends JPanel {
         g.setColor(c);
         g.drawOval(corners[0][0], corners[0][1], width, height);
     }
-
 }

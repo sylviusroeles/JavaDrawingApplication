@@ -24,14 +24,13 @@ public class Rectangle extends JPanel {
         corners = new int[][]{{0, 0}, {0, 0}};
     }
     
-    public Rectangle(int width, int height, int[][]corners, Color c){
+    public Rectangle(int width, int height, int[][] corners, Color c){
         this.width = width;
         this.height = height;
-        this.corners = corners;
+        this.corners = new int[][]{{corners[0][0],corners[0][1]},{corners[1][0], corners[1][1]}};
         this.c = c;
-        System.out.println("new");
     }
-
+    
     //Get the width of the Rectangle
     public int getWidth() {
         return width;
@@ -60,14 +59,12 @@ public class Rectangle extends JPanel {
     //Sets the index of the 2d array with a corner coordinate of the Rectangle
     public void setCorner(int i, int y, int value) {
         corners[i][y] = value;
-        System.out.println(this.hashCode());
     }
 
     public void setCorners(int[][] corners) {
         this.corners = corners;
         this.setWidth(corners[1][0] - corners[0][0]);
         this.setHeight(corners[1][1] - corners[0][1]);
-        System.out.println("test");
     }
 
     //Sets the colour of the Rectangle

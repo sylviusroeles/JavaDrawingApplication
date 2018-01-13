@@ -141,7 +141,6 @@ public class Command {
         int index = 0;
         for (Object shape : shapes) {
             index++;
-            System.out.println(index);
             Class param[] = new Class[1];
             param[0] = Graphics.class;
             try {

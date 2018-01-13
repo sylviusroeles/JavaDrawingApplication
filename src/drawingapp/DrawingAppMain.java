@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -36,6 +37,7 @@ public class DrawingAppMain extends javax.swing.JFrame {
     Command move = new Command();
     Command select = new Command();
     Object selectedShape;
+    ArrayList<Object> drawnShapes = new ArrayList<>();
 
     public DrawingAppMain() {
         initComponents();
@@ -251,7 +253,7 @@ public class DrawingAppMain extends javax.swing.JFrame {
                 mousey = evt.getY();
                 break;
             case 3: {
-                selectedShape = select.Select(history.getVisibleHistory(), evt);
+                selectedShape = select.Select(history.getHistoryList(), evt);
                 break;
             }
             case 4: {
@@ -259,16 +261,16 @@ public class DrawingAppMain extends javax.swing.JFrame {
                     move.setisMoving(true);
                 } else {
                     move.setisMoving(false);
+                    history.addToHistory(drawnShapes);
                 }
                 break;
             }
             case 5: {
                 if (!resize.getIsResizing()) {
-                    resize.Resize(selectedShape, evt);
                     resize.setIsResizing(true);
                 } else {
                     resize.setIsResizing(false);
-                    history.addToHistory(selectedShape);
+                    history.addToHistory(drawnShapes);
                 }
                 break;
             }
@@ -284,12 +286,14 @@ public class DrawingAppMain extends javax.swing.JFrame {
                 command = new Command(g);
                 int[][] ellipseShape = math.get2dCoordinates(mousex, evt.getX(), mousey, evt.getY());
                 System.out.println(ellipseShape[0][0] + " " + ellipseShape[0][1] + " " + ellipseShape[1][0] + " " + ellipseShape[1][1]);
-                history.addToHistory(command.Ellipse(ellipseShape[0][0], ellipseShape[0][1], ellipseShape[1][0], ellipseShape[1][1]));
+                drawnShapes.add(command.Ellipse(ellipseShape[0][0], ellipseShape[0][1], ellipseShape[1][0], ellipseShape[1][1]));
+                history.addToHistory(drawnShapes);
                 break;
             case 2:
                 command = new Command(g);
                 int[][] rectangleShape = math.get2dCoordinates(mousex, evt.getX(), mousey, evt.getY());
-                history.addToHistory(command.Rectangle(rectangleShape[0][0], rectangleShape[0][1], rectangleShape[1][0], rectangleShape[1][1]));
+                drawnShapes.add(command.Rectangle(rectangleShape[0][0], rectangleShape[0][1], rectangleShape[1][0], rectangleShape[1][1]));
+                history.addToHistory(drawnShapes);
                 break;
             default:
                 break;
@@ -303,7 +307,7 @@ public class DrawingAppMain extends javax.swing.JFrame {
             try {
                 move.setGraphics(g);
                 move.Move(selectedShape, evt);
-                move.repaintAll(history.getVisibleHistory());
+                move.repaintAll(history.getHistoryList());
             } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -312,7 +316,7 @@ public class DrawingAppMain extends javax.swing.JFrame {
             try {
                 resize.setGraphics(g);
                 resize.Resize(selectedShape, evt);
-                resize.repaintAll(history.getVisibleHistory());
+                resize.repaintAll(history.getHistoryList());
             } catch (NullPointerException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -328,8 +332,8 @@ public class DrawingAppMain extends javax.swing.JFrame {
     }//GEN-LAST:event_SelectActionPerformed
 
     private void MoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MoveActionPerformed
-        state.SetState(4);
         try {
+            state.SetState(4);
             Class c = selectedShape.getClass();
             Method getcorners = selectedShape.getClass().getMethod("getCorners");
             Method getwidth = selectedShape.getClass().getMethod("getWidth");
@@ -341,18 +345,21 @@ public class DrawingAppMain extends javax.swing.JFrame {
             param[0] = width;
             param[1] = height;
             param[2] = corners;
-            param[3] = Color.red;
+            param[3] = Color.black;
             Object copy = c.getConstructors()[1].newInstance(param);
-            history.addToHistoryWithIndex(copy, 1);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            int index = drawnShapes.indexOf(selectedShape);
+            drawnShapes.remove(selectedShape);
+            drawnShapes.add(index, copy);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
             Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex){
+            System.out.println("No shape selected");
         }
-        history.HistoryDedug();
     }//GEN-LAST:event_MoveActionPerformed
 
     private void ResizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResizeActionPerformed
-        state.SetState(5);
         try {
+            state.SetState(5);
             Class c = selectedShape.getClass();
             Method getcorners = selectedShape.getClass().getMethod("getCorners");
             Method getwidth = selectedShape.getClass().getMethod("getWidth");
@@ -364,13 +371,16 @@ public class DrawingAppMain extends javax.swing.JFrame {
             param[0] = width;
             param[1] = height;
             param[2] = corners;
-            param[3] = Color.red;
+            param[3] = Color.black;
             Object copy = c.getConstructors()[1].newInstance(param);
-            history.addToHistoryWithIndex(copy, 1);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            int index = drawnShapes.indexOf(selectedShape);
+            drawnShapes.remove(selectedShape);
+            drawnShapes.add(index, copy);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
             Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex){
+            System.out.println("No shape selected");
         }
-        history.HistoryDedug();
     }//GEN-LAST:event_ResizeActionPerformed
 
     private void ImportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImportButtonActionPerformed
@@ -386,9 +396,9 @@ public class DrawingAppMain extends javax.swing.JFrame {
         try {
             Graphics g = DrawingField.getGraphics();
             io.setGraphics(g);
-            history.addListToHistory(io.LoadFile(chosenFile));
+            history.addToHistory(io.LoadFile(chosenFile));
             command = new Command(g);
-            command.repaintAll(history.getVisibleHistory());
+            command.repaintAll(history.getHistoryList());
         } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(DrawingAppMain.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -398,14 +408,14 @@ public class DrawingAppMain extends javax.swing.JFrame {
         Graphics g = DrawingField.getGraphics();
         command = new Command(g);
         history.setHistoryIndex(history.getHistoryIndex() - 1);
-        command.Undo(history.getVisibleHistory());
+        command.Undo(history.getHistoryList());
     }//GEN-LAST:event_UndoButtonActionPerformed
 
     private void RedoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RedoButtonActionPerformed
         Graphics g = DrawingField.getGraphics();
         command = new Command(g);
         history.setHistoryIndex(history.getHistoryIndex() + 1);
-        command.Redo(history.getVisibleHistory());
+        command.Redo(history.getHistoryList());
     }//GEN-LAST:event_RedoButtonActionPerformed
 
     /**
