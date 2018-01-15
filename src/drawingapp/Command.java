@@ -35,10 +35,16 @@ public class Command {
         this.g = g;
     }
 
+    /* 
+    Sets the graphics to use when painting
+     */
     public void setGraphics(Graphics g) {
         this.g = g;
     }
 
+    /* 
+    Select command for finding the shape closest to the mouse
+     */
     public Object Select(ArrayList<Object> list, MouseEvent evt) {
         try {
             return select.FindClosestShape(list, evt);
@@ -46,24 +52,6 @@ public class Command {
             Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-    }
-
-    boolean isMoving = false;
-
-    public void setisMoving(boolean isMoving) {
-        this.isMoving = isMoving;
-    }
-
-    public boolean getisMoving() {
-        return isMoving;
-    }
-
-    public void Resize(Object o, MouseEvent evt) {
-        try {
-            resize.Resize(o, evt);
-        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     boolean isResizing = false;
@@ -75,21 +63,47 @@ public class Command {
     public boolean getIsResizing() {
         return isResizing;
     }
+     /* 
+    Resize command for resizing an object. 
+    The two method above are indicators to see if a shape is being resized
+     */   
+    public void Resize(Object o, MouseEvent evt) {
+        try {
+            resize.Resize(o, evt);
+        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    boolean isMoving = false;
+
+    public void setisMoving(boolean isMoving) {
+        this.isMoving = isMoving;
+    }
+
+    public boolean getisMoving() {
+        return isMoving;
+    }
+     /* 
+    move command for moving an object. 
+    The two method above are indicators to see if a shape is being resized
+     */   
     public void Move(Object o, MouseEvent evt) {
         try {
-            if(isMoving){
+            if (isMoving) {
                 move.Move(o, evt);
             }
         } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    /* Stub for future group stuff */
     public void Group(int size) {
         System.out.println("Group");
     }
 
+    //Creates a new Ellipse
     public Object Ellipse(int sx, int sy, int width, int height) {
         ellipse = new Ellipse();
         ellipse.setCorners(new int[][]{{sx, sy}, {sx + width, sy + height}});
@@ -98,6 +112,7 @@ public class Command {
         return ellipse;
     }
 
+    //Creates a Rectangle
     public Object Rectangle(int sx, int sy, int width, int height) {
         rectangle = new Rectangle();
         rectangle.setCorners(new int[][]{{sx, sy}, {sx + width, sy + height}});
@@ -105,11 +120,13 @@ public class Command {
         System.out.println("Rectangle");
         return rectangle;
     }
-
+    
+    //Future ornament stuff
     public void Ornament(String alignment, String s) {
         System.out.println("Ornament");
     }
-
+    
+    //Undo command
     public void Undo(ArrayList<Object> list) {
         try {
             repaintAll(list);
@@ -117,7 +134,8 @@ public class Command {
             Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    //Redo command
     public void Redo(ArrayList<Object> list) {
         try {
             repaintAll(list);

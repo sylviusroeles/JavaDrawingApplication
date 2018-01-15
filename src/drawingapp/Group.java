@@ -22,10 +22,5 @@ public class Group {
     
     public void AddToGroup(Object o){
         group.add(o);
-        System.out.println("Added to: "+ tabindex);
-    }
-    
-    public void RemoveFromGroup(Object o){
-        group.remove(o);
     }
 }
