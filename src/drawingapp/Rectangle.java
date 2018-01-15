@@ -7,7 +7,6 @@ package drawingapp;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JPanel;
 
 /**

@@ -36,14 +36,14 @@ public class History {
         historyIndex++;
     }
     
-    public void addToHistoryI(int i, ArrayList<Object> o) {
+    //public void addToHistoryI(int i, ArrayList<Object> o) {
         //System.out.println(o.size());
-        historylist.add(i, new ArrayList<>(o));
+    //    historylist.add(i, new ArrayList<>(o));
         //historyIndex++;
-    }
+   // }
 
     public ArrayList<Object> getHistoryList() {
-        System.out.println(historyIndex + " " + historylist.get(historyIndex).size());
+        //System.out.println(historyIndex + " " + historylist.get(historyIndex).size());
         return historylist.get(historyIndex);
     }
     

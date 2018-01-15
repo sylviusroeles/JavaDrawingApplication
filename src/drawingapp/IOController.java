@@ -62,7 +62,7 @@ public class IOController {
                     } else {
                         param[i - 1] = int.class;
                         objects[i - 1] = Integer.parseInt(SplitLine[i]);
-                    } 
+                    }
                 }
                 try {
                     Method test = command.getClass().getMethod(SplitLine[0].substring(0, 1).toUpperCase() + SplitLine[0].substring(1), param);
@@ -77,13 +77,14 @@ public class IOController {
         }
         return shapes;
     }
-    
-    public void SaveFile(ArrayList<Object> shapes, String filename, String dir){
+
+    public void SaveFile(ArrayList<Object> shapes, String filename, String dir) {
         try {
-            PrintWriter writer = new PrintWriter(dir+ "\\" +filename, "UTF-8");
-            for(Object selectedShape: shapes){
+            PrintWriter writer = new PrintWriter(dir + "\\" + filename, "UTF-8");
+            for (Object selectedShape : shapes) {
                 try {
                     Class c = selectedShape.getClass();
+                    System.out.println(c.getSimpleName().toLowerCase());
                     Method getcorners = c.getMethod("getCorners");
                     Method getwidth = c.getMethod("getWidth");
                     Method getheight = c.getMethod("getHeight");
@@ -112,7 +113,7 @@ public class IOController {
         int dotIndex = fileName.lastIndexOf('.');
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
     }
-    
+
     //checks if string is numeric
     public static boolean isNumeric(String str) {
         try {
